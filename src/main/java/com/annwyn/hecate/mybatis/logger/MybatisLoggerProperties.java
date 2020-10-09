@@ -18,6 +18,6 @@ public class MybatisLoggerProperties {
     /**
      * 是否强制打印所有SQL
      */
-    private boolean forcePrintSQL;
+    private boolean forcePrintSql;
 
 }

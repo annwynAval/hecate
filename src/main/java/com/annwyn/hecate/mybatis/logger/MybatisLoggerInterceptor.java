@@ -80,7 +80,7 @@ public class MybatisLoggerInterceptor implements Interceptor {
 
     public boolean checkIfNeedPrintSql(String sqlId) throws ClassNotFoundException {
         // 强制开启
-        if(this.mybatisLoggerProperties.isForcePrintSQL()) {
+        if(this.mybatisLoggerProperties.isForcePrintSql()) {
             return true;
         }
 

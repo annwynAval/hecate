@@ -8,11 +8,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.util.List;
 
@@ -33,7 +31,7 @@ public class MybatisLoggerAutoConfiguration implements InitializingBean {
     @Override
     public void afterPropertiesSet() {
         if(this.mybatisLoggerProperties.isEnable()) {
-            this.logger.info("激活mybatis自动打印SQL配置, forcePrintSQL: {}", this.mybatisLoggerProperties.isForcePrintSQL());
+            this.logger.info("激活mybatis自动打印SQL配置, forcePrintSQL: {}", this.mybatisLoggerProperties.isForcePrintSql());
             final MybatisLoggerInterceptor interceptor = new MybatisLoggerInterceptor(this.mybatisLoggerProperties);
             this.sqlSessionFactories.forEach(item -> item.getConfiguration().addInterceptor(interceptor));
         }

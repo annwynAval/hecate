@@ -12,12 +12,27 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "com.annwyn.swagger")
 public class SwaggerProperties {
 
+    /**
+     * 是否启用
+     */
     private boolean enable;
 
+    /**
+     * swagger title
+     */
     private String title;
+    /**
+     * swagger version
+     */
     private String version;
+    /**
+     * swagger description
+     */
     private String description;
 
+    /**
+     * swagger扫描包
+     */
     private String basePackage;
 
 }
