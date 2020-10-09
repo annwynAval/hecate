@@ -1,0 +1,4 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.annwyn.hecate.mybatis.logger.MybatisLoggerAutoConfiguration,\
+  com.annwyn.hecate.swagger.SwaggerAutoConfiguration,\
+  com.annwyn.hecate.validation.ValidationAutoConfiguration
