@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
@@ -15,7 +16,8 @@ import javax.annotation.Resource;
 import java.util.List;
 
 @Configuration
-@ConditionalOnBean({SqlSessionFactory.class, MybatisLoggerProperties.class})
+@ConditionalOnBean(SqlSessionFactory.class)
+@ConditionalOnProperty(prefix = "com.annwyn.mybatis.logger", name = "enable", havingValue = "true")
 @EnableConfigurationProperties(MybatisLoggerProperties.class)
 @AutoConfigureAfter(MybatisAutoConfiguration.class)
 public class MybatisLoggerAutoConfiguration implements InitializingBean {

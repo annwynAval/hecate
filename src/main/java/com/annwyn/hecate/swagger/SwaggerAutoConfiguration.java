@@ -3,7 +3,7 @@ package com.annwyn.hecate.swagger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -20,8 +20,8 @@ import javax.annotation.Resource;
 
 @Configuration
 @EnableSwagger2
-@ConditionalOnBean(SwaggerProperties.class)
 @EnableConfigurationProperties(SwaggerProperties.class)
+@ConditionalOnProperty(prefix = "com.annwyn.swagger", name = "enable", havingValue = "true")
 @AutoConfigureAfter(WebMvcAutoConfiguration.class)
 public class SwaggerAutoConfiguration {
 

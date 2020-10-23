@@ -66,7 +66,7 @@ public class MybatisLoggerInterceptor implements Interceptor {
             return invocation.proceed();
         }
         MappedStatement mappedStatement = (MappedStatement) invocation.getArgs()[0];
-        if(this.checkIfNeedPrintSql(mappedStatement.getId())) { // 判断是否需要打印SQL
+        if(!this.checkIfNeedPrintSql(mappedStatement.getId())) { // 判断是否需要打印SQL
             return invocation.proceed();
         }
 
