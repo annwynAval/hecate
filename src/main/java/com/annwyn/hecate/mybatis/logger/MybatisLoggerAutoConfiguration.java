@@ -33,7 +33,7 @@ public class MybatisLoggerAutoConfiguration implements InitializingBean {
     @Override
     public void afterPropertiesSet() {
         if(this.mybatisLoggerProperties.isEnable()) {
-            this.logger.info("激活mybatis自动打印SQL配置, forcePrintSQL: {}", this.mybatisLoggerProperties.isForcePrintSql());
+            this.logger.info("激活mybatis自动打印SQL配置");
             final MybatisLoggerInterceptor interceptor = new MybatisLoggerInterceptor(this.mybatisLoggerProperties);
             this.sqlSessionFactories.forEach(item -> item.getConfiguration().addInterceptor(interceptor));
         }

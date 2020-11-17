@@ -12,10 +12,13 @@ public class MybatisLoggerProperties {
     /**
      * 是否启用
      */
-    private boolean enable;
+    private boolean enable = false;
+
     /**
-     * 是否强制打印所有SQL
+     * 未找到注解时, 是否进行打印
+     * ture: 未找到注解时, 打印sql
+     * false: 未找到注解时, 不打印sql
      */
-    private boolean forcePrintSql;
+    private boolean printSqlIfMissing = false;
 
 }

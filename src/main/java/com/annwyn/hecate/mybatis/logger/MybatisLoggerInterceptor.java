@@ -79,17 +79,10 @@ public class MybatisLoggerInterceptor implements Interceptor {
     }
 
     public boolean checkIfNeedPrintSql(String sqlId) throws ClassNotFoundException {
-        // 强制开启
-        if(this.mybatisLoggerProperties.isForcePrintSql()) {
-            return true;
+        Boolean needPrintSql = this.needPrintSqlCache.get(sqlId);
+        if(needPrintSql == null) {
+            this.needPrintSqlCache.put(sqlId, needPrintSql = this.judgeIfNeedPrintSql(sqlId));
         }
-
-        if(this.needPrintSqlCache.containsKey(sqlId)) {
-            return this.needPrintSqlCache.get(sqlId);
-        }
-
-        boolean needPrintSql = this.judgeIfNeedPrintSql(sqlId);
-        this.needPrintSqlCache.put(sqlId, needPrintSql);
         return needPrintSql;
     }
 
@@ -111,7 +104,7 @@ public class MybatisLoggerInterceptor implements Interceptor {
             return false;
         }
         PrintSql printSql = AnnotationUtils.findAnnotation(optional.get(), PrintSql.class);
-        return printSql != null && printSql.value();
+        return printSql == null ? this.mybatisLoggerProperties.isPrintSqlIfMissing() : printSql.value();
     }
 
     private String getSql(MappedStatement mappedStatement, Invocation invocation) {
