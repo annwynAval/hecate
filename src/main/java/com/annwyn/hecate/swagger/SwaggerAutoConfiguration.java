@@ -76,6 +76,9 @@ public class SwaggerAutoConfiguration {
         return parameters;
     }
 
+    /**
+     * 此处不配置也依旧可以正常访问, 应该是swagger内部有做映射, 不过暂时不清楚是哪处做的配置.
+     */
     @Bean
     public WebMvcConfigurer swaggerWebMvcConfigurer() {
         return new WebMvcConfigurer() {
