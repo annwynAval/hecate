@@ -21,10 +21,12 @@ public class SwaggerProperties {
      * swagger title
      */
     private String title;
+
     /**
      * swagger version
      */
     private String version;
+
     /**
      * swagger description
      */
