@@ -9,6 +9,8 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.ParameterBuilder;
 import springfox.documentation.builders.PathSelectors;
@@ -38,7 +40,7 @@ public class SwaggerAutoConfiguration {
     private SwaggerProperties swaggerProperties;
 
     @Bean
-    public Docket createRestApi() {
+    public Docket restDocket() {
         this.logger.info("启动swagger, {}: {}. 扫描包: {}, 访问路径: {}", this.swaggerProperties.getTitle(),
                 this.swaggerProperties.getVersion(), this.swaggerProperties.getBasePackage(), "swagger-ui.html");
         final ApiInfo apiInfo = new ApiInfoBuilder() //
@@ -74,4 +76,14 @@ public class SwaggerAutoConfiguration {
         return parameters;
     }
 
+    @Bean
+    public WebMvcConfigurer swaggerWebMvcConfigurer() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addResourceHandlers(ResourceHandlerRegistry registry) {
+                registry.addResourceHandler("/swagger-ui.html").addResourceLocations("classpath:/META-INF/resources/");
+                registry.addResourceHandler("/webjars/**").addResourceLocations("classpath:/META-INF/resources/webjars/");
+            }
+        };
+    }
 }
