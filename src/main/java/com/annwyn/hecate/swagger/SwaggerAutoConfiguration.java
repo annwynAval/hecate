@@ -11,15 +11,15 @@ import org.springframework.context.annotation.Configuration;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
-import springfox.documentation.oas.annotations.EnableOpenApi;
 import springfox.documentation.service.ApiInfo;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import javax.annotation.Resource;
 
 @Configuration
-@EnableOpenApi
+@EnableSwagger2
 @EnableConfigurationProperties(SwaggerProperties.class)
 @ConditionalOnProperty(prefix = "com.annwyn.swagger", name = "enable", havingValue = "true")
 @AutoConfigureAfter(WebMvcAutoConfiguration.class)
@@ -39,8 +39,7 @@ public class SwaggerAutoConfiguration {
                 .version(this.swaggerProperties.getVersion()) //
                 .description(this.swaggerProperties.getDescription()) //
                 .build();
-        return new Docket(DocumentationType.OAS_30) //
-                .pathMapping(this.swaggerProperties.getServletPath()) //
+        return new Docket(DocumentationType.SWAGGER_2) //
                 .enable(this.swaggerProperties.isEnable()) //
                 .apiInfo(apiInfo) //
                 .select() //
@@ -49,4 +48,18 @@ public class SwaggerAutoConfiguration {
                 .build();
     }
 
+    // /**
+    //  * 此处不配置也依旧可以正常访问, 应该是swagger内部有做映射, 不过暂时不清楚是哪处做的配置.
+    //  * @return {@link WebMvcConfigurer}
+    //  */
+    // @Bean
+    // public WebMvcConfigurer swaggerWebMvcConfigurer() {
+    //     return new WebMvcConfigurer() {
+    //         @Override
+    //         public void addResourceHandlers(ResourceHandlerRegistry registry) {
+    //             registry.addResourceHandler("/swagger-ui.html").addResourceLocations("classpath:/META-INF/resources/");
+    //             registry.addResourceHandler("/webjars/**").addResourceLocations("classpath:/META-INF/resources/webjars/");
+    //         }
+    //     };
+    // }
 }

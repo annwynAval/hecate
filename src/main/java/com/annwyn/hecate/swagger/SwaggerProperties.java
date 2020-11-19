@@ -31,11 +31,6 @@ public class SwaggerProperties {
     private String description;
 
     /**
-     * 请求地址
-     */
-    private String servletPath;
-
-    /**
      * swagger扫描包
      */
     private String basePackage;
