@@ -9,8 +9,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.ParameterBuilder;
 import springfox.documentation.builders.PathSelectors;
@@ -76,17 +74,18 @@ public class SwaggerAutoConfiguration {
         return parameters;
     }
 
-    /**
-     * 此处不配置也依旧可以正常访问, 应该是swagger内部有做映射, 不过暂时不清楚是哪处做的配置.
-     */
-    @Bean
-    public WebMvcConfigurer swaggerWebMvcConfigurer() {
-        return new WebMvcConfigurer() {
-            @Override
-            public void addResourceHandlers(ResourceHandlerRegistry registry) {
-                registry.addResourceHandler("/swagger-ui.html").addResourceLocations("classpath:/META-INF/resources/");
-                registry.addResourceHandler("/webjars/**").addResourceLocations("classpath:/META-INF/resources/webjars/");
-            }
-        };
-    }
+    // /**
+    //  * 此处不配置也依旧可以正常访问, 应该是swagger内部有做映射, 不过暂时不清楚是哪处做的配置.
+    //  * @return {@link WebMvcConfigurer}
+    //  */
+    // @Bean
+    // public WebMvcConfigurer swaggerWebMvcConfigurer() {
+    //     return new WebMvcConfigurer() {
+    //         @Override
+    //         public void addResourceHandlers(ResourceHandlerRegistry registry) {
+    //             registry.addResourceHandler("/swagger-ui.html").addResourceLocations("classpath:/META-INF/resources/");
+    //             registry.addResourceHandler("/webjars/**").addResourceLocations("classpath:/META-INF/resources/webjars/");
+    //         }
+    //     };
+    // }
 }

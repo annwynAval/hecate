@@ -1,5 +1,6 @@
 package com.annwyn.hecate.mybatis.logger;
 
+import org.apache.commons.lang3.ClassUtils;
 import org.apache.ibatis.cache.CacheKey;
 import org.apache.ibatis.executor.Executor;
 import org.apache.ibatis.mapping.BoundSql;
@@ -47,9 +48,11 @@ public class MybatisLoggerInterceptor implements Interceptor {
     private static final String MYBATIS_LOGGING_REGEXP_VALUE = "[sqlId: {}] [耗时: {}ms] {}";
 
     private final Logger logger = LoggerFactory.getLogger(MybatisLoggerInterceptor.class);
-    private final MybatisLoggerProperties mybatisLoggerProperties;
     private final Map<String, Boolean> needPrintSqlCache = new ConcurrentHashMap<>(16);
+    private final Map<String, Class<?>> mapperClassCache = new ConcurrentHashMap<>(16);
     private final Pattern mapperMethodPattern = Pattern.compile("^(?<className>.+)\\.(?<methodName>\\w+)$");
+
+    private final MybatisLoggerProperties mybatisLoggerProperties;
 
     protected MybatisLoggerInterceptor(MybatisLoggerProperties properties) {
         this.mybatisLoggerProperties = properties;
@@ -86,7 +89,7 @@ public class MybatisLoggerInterceptor implements Interceptor {
         return needPrintSql;
     }
 
-    private boolean judgeIfNeedPrintSql(String sqlId) throws ClassNotFoundException {
+    private boolean judgeIfNeedPrintSql(String sqlId) {
         Matcher matcher = this.mapperMethodPattern.matcher(sqlId);
         if(!matcher.matches()) {
             return false;
@@ -96,15 +99,51 @@ public class MybatisLoggerInterceptor implements Interceptor {
             return false;
         }
 
-        Class<?> clazz = Class.forName(className);
+        Class<?> clazz = this.getMapperClass(className);
+        if(clazz == null) {
+            return false;
+        }
+
         Optional<Method> optional = Arrays.stream(clazz.getMethods()) //
                 .filter(item -> item.getName().equals(methodName)).findFirst();
-
         if(!optional.isPresent()) {
+            this.logger.error("method not found. className: {}, methodName: {}", className, methodName);
             return false;
         }
         PrintSql printSql = AnnotationUtils.findAnnotation(optional.get(), PrintSql.class);
         return printSql == null ? this.mybatisLoggerProperties.isPrintSqlIfMissing() : printSql.value();
+    }
+
+    private Class<?> getMapperClass(String className) {
+        if(this.mapperClassCache.containsKey(className)) {
+            return this.mapperClassCache.get(className);
+        }
+        synchronized(MybatisLoggerInterceptor.class) {
+            if(this.mapperClassCache.containsKey(className)) {
+                return this.mapperClassCache.get(className);
+            }
+
+            ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+            if(classLoader == null) {
+                classLoader = MybatisLoggerInterceptor.class.getClassLoader();
+            }
+            Class<?> clazz = this.getMapperClass(className, classLoader);
+            this.mapperClassCache.put(className, clazz);
+            return clazz;
+        }
+    }
+
+    private Class<?> getMapperClass(String className, ClassLoader classLoader) {
+        try {
+            Class<?> clazz = Class.forName(className, false, classLoader);
+            if(clazz.isInterface()) {
+                return clazz;
+            }
+            this.logger.error("can't found interface, but found class. {}", className);
+        } catch(ClassNotFoundException e) {
+            this.logger.error("can't found class.", e);
+        }
+        return null;
     }
 
     private String getSql(MappedStatement mappedStatement, Invocation invocation) {
