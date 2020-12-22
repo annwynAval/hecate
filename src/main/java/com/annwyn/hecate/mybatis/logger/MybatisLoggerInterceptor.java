@@ -74,9 +74,8 @@ public class MybatisLoggerInterceptor implements Interceptor {
 
         long startMills = System.currentTimeMillis();
         Object returnValue = invocation.proceed();
-        long time = System.currentTimeMillis() - startMills;
 
-        this.showSql(mappedStatement.getId(), this.getSql(mappedStatement, invocation), time);
+        this.showSql(mappedStatement.getId(), this.getSql(mappedStatement, invocation), System.currentTimeMillis() - startMills);
         return returnValue;
     }
 
