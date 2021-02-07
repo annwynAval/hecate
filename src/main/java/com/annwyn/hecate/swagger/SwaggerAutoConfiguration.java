@@ -1,8 +1,10 @@
 package com.annwyn.hecate.swagger;
 
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -11,15 +13,19 @@ import org.springframework.context.annotation.Configuration;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
+import springfox.documentation.oas.annotations.EnableOpenApi;
 import springfox.documentation.service.ApiInfo;
 import springfox.documentation.spi.DocumentationType;
+import springfox.documentation.spi.service.contexts.SecurityContext;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
-import javax.annotation.Resource;
+import java.util.Collections;
+import java.util.List;
+
 
 @Configuration
-@EnableSwagger2
+@EnableOpenApi
 @EnableConfigurationProperties(SwaggerProperties.class)
 @ConditionalOnProperty(prefix = "com.annwyn.swagger", name = "enable", havingValue = "true")
 @AutoConfigureAfter(WebMvcAutoConfiguration.class)
@@ -27,39 +33,36 @@ public class SwaggerAutoConfiguration {
 
     private final Logger logger = LoggerFactory.getLogger(SwaggerAutoConfiguration.class);
 
-    @Resource
-    private SwaggerProperties swaggerProperties;
-
     @Bean
-    public Docket restDocket() {
-        this.logger.info("启动swagger, {}: {}. 扫描包: {}, 访问路径: {}", this.swaggerProperties.getTitle(),
-                this.swaggerProperties.getVersion(), this.swaggerProperties.getBasePackage(), "swagger-ui.html");
-        final ApiInfo apiInfo = new ApiInfoBuilder() //
-                .title(this.swaggerProperties.getTitle()) //
-                .version(this.swaggerProperties.getVersion()) //
-                .description(this.swaggerProperties.getDescription()) //
-                .build();
+    @ConditionalOnMissingBean(Docket.class)
+    public Docket docket(ApiInfo apiInfo, SwaggerProperties swaggerProperties, List<SecurityContext> securityContexts) {
+        this.logger.info("启动swagger, 扫描包路径: {}. 访问路径{}.", swaggerProperties.getBasePackage(), "swagger-ui/index.html");
         return new Docket(DocumentationType.SWAGGER_2) //
-                .enable(this.swaggerProperties.isEnable()) //
+                .enable(swaggerProperties.isEnable()) //
                 .apiInfo(apiInfo) //
+                .securityContexts(securityContexts) //
                 .select() //
-                .apis(RequestHandlerSelectors.basePackage(this.swaggerProperties.getBasePackage())) //
+                .apis(RequestHandlerSelectors.basePackage(swaggerProperties.getBasePackage())) //
                 .paths(PathSelectors.any()) //
                 .build();
     }
 
-    // /**
-    //  * 此处不配置也依旧可以正常访问, 应该是swagger内部有做映射, 不过暂时不清楚是哪处做的配置.
-    //  * @return {@link WebMvcConfigurer}
-    //  */
-    // @Bean
-    // public WebMvcConfigurer swaggerWebMvcConfigurer() {
-    //     return new WebMvcConfigurer() {
-    //         @Override
-    //         public void addResourceHandlers(ResourceHandlerRegistry registry) {
-    //             registry.addResourceHandler("/swagger-ui.html").addResourceLocations("classpath:/META-INF/resources/");
-    //             registry.addResourceHandler("/webjars/**").addResourceLocations("classpath:/META-INF/resources/webjars/");
-    //         }
-    //     };
-    // }
+    @Bean
+    @ConditionalOnMissingBean(ApiInfo.class)
+    public ApiInfo apiInfo(SwaggerProperties swaggerProperties) {
+        this.logger.info("配置swagger, {}: {}. 扫描包: {}, 是否启用: {}", swaggerProperties.getTitle(),
+                swaggerProperties.getVersion(), swaggerProperties.getBasePackage(), swaggerProperties.isEnable());
+
+        return new ApiInfoBuilder() //
+                .title(swaggerProperties.getTitle())
+                .version(swaggerProperties.getVersion()) //
+                .description(swaggerProperties.getDescription()) //
+                .build();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name = "securityContexts")
+    public List<SecurityContext> securityContexts() {
+        return Collections.emptyList();
+    }
 }

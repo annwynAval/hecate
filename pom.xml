@@ -12,15 +12,14 @@
 
     <groupId>com.annwyn.hecate</groupId>
     <artifactId>hecate</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
 
     <properties>
         <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
+        <springfox.version>3.0.0</springfox.version>
         <mysql.version>5.1.48</mysql.version>
-        <swagger.version>2.9.2</swagger.version>
-        <swagger-models.version>1.5.22</swagger-models.version>
     </properties>
 
     <dependencies>
@@ -31,34 +30,19 @@
             <optional>true</optional>
         </dependency>
 
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-boot-starter</artifactId>
+            <version>${springfox.version}</version>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+
         <!-- mybatis -->
         <dependency>
             <groupId>org.mybatis.spring.boot</groupId>
             <artifactId>mybatis-spring-boot-starter</artifactId>
             <version>2.1.3</version>
-            <scope>provided</scope>
-            <optional>true</optional>
-        </dependency>
-
-        <!-- swagger -->
-        <dependency>
-            <groupId>io.springfox</groupId>
-            <artifactId>springfox-swagger2</artifactId>
-            <version>${swagger.version}</version>
-            <scope>provided</scope>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>io.springfox</groupId>
-            <artifactId>springfox-swagger-ui</artifactId>
-            <version>${swagger.version}</version>
-            <scope>provided</scope>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>io.swagger</groupId>
-            <artifactId>swagger-models</artifactId>
-            <version>${swagger-models.version}</version>
             <scope>provided</scope>
             <optional>true</optional>
         </dependency>
